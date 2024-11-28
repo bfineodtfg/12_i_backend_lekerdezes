@@ -22,13 +22,17 @@ namespace _12_i_backend_lekerdezes
     /// </summary>
     public partial class MainWindow : Window
     {
+        int NumOfKacsa = 0;
+        int longestKacsa = 0;
+        int shortestKacsa = int.MaxValue;
         public MainWindow()
         {
             InitializeComponent();
             CreateTextBlock();
         }
 
-        async void CreateTextBlock() {
+        async void CreateTextBlock()
+        {
             kacsak.Children.Clear();
             HttpClient client = new HttpClient();
             string url = "http://127.0.0.1:3000/kacsa";
@@ -37,8 +41,21 @@ namespace _12_i_backend_lekerdezes
                 HttpResponseMessage response = await client.GetAsync(url);
                 string stringResponse = await response.Content.ReadAsStringAsync();
                 List<KacsaClass> kacsaList = JsonConvert.DeserializeObject<List<KacsaClass>>(stringResponse);
+                NumOfKacsa = 0;
+                longestKacsa = 0;
+                shortestKacsa = int.MaxValue;
                 foreach (KacsaClass item in kacsaList)
                 {
+                    NumOfKacsa++;
+                    if (shortestKacsa > item.length)
+                    {
+                        shortestKacsa = item.length;
+                    }
+                    if (longestKacsa < item.length)
+                    {
+                        longestKacsa = item.length;
+                    }
+
                     Border oneBorder = new Border();
                     kacsak.Children.Add(oneBorder);
                     Grid oneGrid = new Grid();
@@ -65,6 +82,32 @@ namespace _12_i_backend_lekerdezes
                     LengthTextBlock.Text = $"Hossz: {item.length}";
                     SellButton.Content = "Eladás";
 
+                    SellButton.Click += async (s, e) =>
+                    {
+                        HttpClient deleteClient = new HttpClient();
+                        string deleteUrl = "http://127.1.1.1:3000/kacsa";
+                        try
+                        {
+                            var jsonObject = new
+                            {
+                                id = item.id
+                            };
+                            string jsonString = JsonConvert.SerializeObject(jsonObject);
+                            HttpRequestMessage request = new HttpRequestMessage();
+                            request.Method = HttpMethod.Delete;
+                            request.RequestUri = new Uri(deleteUrl);
+                            request.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                            HttpResponseMessage deleteResponse = await client.SendAsync(request);
+                            //deleteClient.DeleteAsync(url);
+                            deleteResponse.EnsureSuccessStatusCode();
+                            kacsak.Children.Remove(oneBorder);
+                        }
+                        catch (Exception error)
+                        {
+                            MessageBox.Show(error.Message);
+                        }
+                    };
+
                     oneBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848"));
                     oneBorder.Margin = new Thickness(5);
                     oneBorder.CornerRadius = new CornerRadius(10);
@@ -76,6 +119,9 @@ namespace _12_i_backend_lekerdezes
                     //oneBlock.Text = $"Kacsa neve: {item.name}, kacsa hossza: {item.length}";
 
                 }
+                KacsaDarab.Text = NumOfKacsa + " darab";
+                KacsaMin.Text = shortestKacsa + " cm";
+                KacsaMax.Text = longestKacsa + " cm";
             }
             catch (Exception e)
             {
@@ -85,8 +131,8 @@ namespace _12_i_backend_lekerdezes
 
 
         }
-
-        async void AddKacsa(object s, EventArgs e) {
+        async void AddKacsa(object s, EventArgs e)
+        {
             HttpClient client = new HttpClient();
             string url = "http://127.1.1.1:3000/kacsa";
 
