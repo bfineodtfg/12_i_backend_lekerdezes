@@ -25,6 +25,8 @@ namespace _12_i_backend_lekerdezes
         int NumOfKacsa = 0;
         int longestKacsa = 0;
         int shortestKacsa = int.MaxValue;
+        int borderHeight = -1;
+        int allBorderWidth = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -101,6 +103,14 @@ namespace _12_i_backend_lekerdezes
                             //deleteClient.DeleteAsync(url);
                             deleteResponse.EnsureSuccessStatusCode();
                             kacsak.Children.Remove(oneBorder);
+                            kacsaList.Remove(item);
+                            NumOfKacsa = kacsaList.Count;
+                            shortestKacsa = kacsaList.Min(x => x.length);
+                            longestKacsa = kacsaList.Max(x => x.length);
+
+                            KacsaDarab.Text = NumOfKacsa + " darab";
+                            KacsaMin.Text = shortestKacsa + " cm";
+                            KacsaMax.Text = longestKacsa + " cm";
                         }
                         catch (Exception error)
                         {
@@ -113,12 +123,26 @@ namespace _12_i_backend_lekerdezes
                     oneBorder.CornerRadius = new CornerRadius(10);
                     oneBorder.Padding = new Thickness(10);
 
+                    if (borderHeight < 0)
+                    {
+                        borderHeight = (int)oneBorder.Height;
+                    }
+                    allBorderWidth += (int)oneBorder.Width + (int)oneBorder.Margin.Left + (int)oneBorder.Margin.Right;
                     NameTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                     LengthTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
 
                     //oneBlock.Text = $"Kacsa neve: {item.name}, kacsa hossza: {item.length}";
 
                 }
+
+
+                //wrapPanel sor szám magasság alapján:
+                int row = (int)kacsak.Height / borderHeight;
+
+                //wrapPanel sor szám szélesség alapján:
+                int ROW = (int)Math.Ceiling(allBorderWidth / kacsak.Width);
+                //kacsak.Height = ROW * borderHeight;
+
                 KacsaDarab.Text = NumOfKacsa + " darab";
                 KacsaMin.Text = shortestKacsa + " cm";
                 KacsaMax.Text = longestKacsa + " cm";
