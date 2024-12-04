@@ -197,6 +197,35 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Foreground="White"
+                        FontSize="14"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"
+                        >Kacsa neve:</TextBlock>
+                    <TextBox
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Margin="10 15"
+                        Name="kacsaNeve"
+                        ></TextBox>
+                    <Button
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Margin="50 15"
+                        Click="SearchKacsa"
+                        >Keresés</Button>
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        Foreground="White"
+                        FontSize="14"
+                        TextAlignment="Center"
+                        VerticalAlignment="Center"
+                        Name="SearchedLength"
+                        >Kacsa hossza: </TextBlock>
                 </Grid>
             </Border>
         </Grid>
